@@ -1,0 +1,157 @@
+body {
+    background-color: #555;
+}
+
+#drop_zone {
+    margin-left: auto;
+    margin-right: auto;
+    border: 2.5px solid black;
+    border-radius: 10px;
+    width: 50%;
+    background-color: #333;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+#drop_zone>p {
+    text-align: center;
+    font-size: 30px;
+    border-bottom: 1px solid #999;
+    padding-bottom: 5px;
+    color: #999;
+}
+
+#drop_zone>ol>li {
+    color: #6B9D41;
+}
+
+#invalid_zone {
+    margin-left: auto;
+    margin-right: auto;
+    display: none;
+    width: 50%;
+    border: 2.5px solid black;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #333;
+    margin-top: 20px;
+}
+
+#invalid_zone>p {
+    text-align: center;
+    font-size: 30px;
+    border-bottom: 1px solid #999;
+    padding-bottom: 5px;
+    color: #999
+}
+
+#invalid_zone>ol>li {
+    color: #E85156
+}
+
+#buttons {
+    text-align: center;
+}
+
+#download {
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: none;
+    font-size: 20px;
+    cursor: pointer;
+    width: 50%;
+}
+
+#download:hover {
+    opacity: .5;
+}
+
+#convert {
+    background-color: #222;
+    border: none;
+    color: #999;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 20px;
+    cursor: pointer;
+    width: 50%;
+    border-radius: 10px;
+}
+
+#convert:hover {
+    opacity: .5;
+}
+
+#reset {
+    margin-top: 10px;
+    background-color: #222;
+    border: none;
+    color: #999;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 20px;
+    cursor: pointer;
+    width: 50%;
+    border-radius: 10px;
+}
+
+#reset:hover {
+    opacity: .5;
+}
+
+#loader {
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    z-index: 1;
+    width: 150px;
+    height: 150px;
+    margin: -75px 0 0 -75px;
+    border: 16px solid #999;
+    border-radius: 50%;
+    border-top: 16px solid #111;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
+
+ol {
+    padding: 20px;
+    list-style-type: decimal;
+}
+
+ol li {
+    float: left;
+    margin-left: 5%;
+}
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
