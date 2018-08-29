@@ -17,11 +17,12 @@ function allowDownload(newData) {
         }).then(blob => {
             saveAs(blob, 'mapleTACSV.zip');
             newData = [];
-            document.getElementById('convert').disabled = false;
+            files = [];
+            document.getElementById('convert').classList.add('disabled');
             document.getElementById('convert').style.display = 'inline-block';
             document.querySelector('[id="download"]').disabled = true;
             document.querySelector('[id="download"]').style.display = 'none';
-            document.querySelector('ol').innerHTML = '';
+            document.getElementById('valid').innerHTML = '';
             check = false;
         });
     });
@@ -160,8 +161,6 @@ document.getElementById('convert').addEventListener('click', event => {
     if (files.length > 0) {
         check = true;
         modifyCSV(files);
-    } else {
-        alert('Please add at least one valid CSV file');
     }
 });
 
