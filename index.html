@@ -6,23 +6,47 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Page Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="./materialize/css/materialize.min.css" />
+    <script src="./materialize/js/materialize.min.js"></script>
 </head>
 
 <body>
-    <div id="drop_zone">
-        <p>Drag and Drop CSV Files Here</p>
-        <ol type="1"></ol>
+    <nav>
+        <div class="nav-wrapper blue darken-1">
+            <a href="#" class="brand-logo"></a>
+        </div>
+    </nav>
+    <div id="content">
+        <div id="drop_zone">
+            <p>Drag and Drop CSV Files Here</p>
+
+            <table id="valid"></table>
+        </div>
+        <div class="center-align" id="buttons">
+            <button class="waves-effect waves-light blue darken-1 btn disabled" id="convert"><i class="material-icons left">cached</i>Convert</button>
+            <button class="waves-effect waves-light green btn pulse" id="download"><i class="material-icons left">arrow_downward</i>Download</button>
+            <button class="waves-effect waves-light blue darken-1 btn" id="reset"><i class="material-icons left">replay</i>Reset</button>
+        </div>
+        <div id="invalid_zone">
+            <p>Invalid CSV Files</p>
+            <table id="invalid"></table>
+        </div>
     </div>
-    <div id="loader"></div>
-    <div id="buttons">
-        <button class="button" id="convert">Convert</button>
-        <button class="button" id="download">Download</button>
-        <button class="button" id="reset">Reset</button>
-    </div>
-    <div id="invalid_zone">
-        <p>Invalid CSV Files</p>
-        <ol id="invalid" type="1"></ol>
+
+    <div class="preloader-wrapper big active" id="loader">
+        <div class="spinner-layer spinner-blue-only">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+                <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+                <div class="circle"></div>
+            </div>
+        </div>
     </div>
 </body>
 <script src="https://d3js.org/d3-dsv.v1.min.js "></script>
