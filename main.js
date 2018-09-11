@@ -4,54 +4,74 @@ let files = [];
 let invalidFiles = [];
 let validRowCount = 0;
 let invalidRowCount = 0;
+let downloadButton = document.querySelector('[id="download"]');
+let convertButton = document.getElementById('convert');
+let dropText = document.getElementById('dropText');
+let newData = [];
 
-function allowDownload(newData) {
-    document.querySelector('[id="download"]').addEventListener('click', event => {
-        console.log(newData);
-        newData.forEach((element, i) => {
-            zip.file(`males(${i + 1}).csv`, d3.csvFormat(element.males));
-            zip.file(`females(${i + 1}).csv`, d3.csvFormat(element.females));
-        });
-        zip.generateAsync({
-            type: 'blob'
-        }).then(blob => {
-            saveAs(blob, 'mapleTACSV.zip');
-            newData = [];
-            files = [];
-            document.getElementById('convert').classList.add('disabled');
-            document.getElementById('convert').style.display = 'inline-block';
-            document.querySelector('[id="download"]').disabled = true;
-            document.querySelector('[id="download"]').style.display = 'none';
-            document.getElementById('valid').innerHTML = '';
-            check = false;
-        });
+downloadButton.addEventListener('click', event => {
+    newData.forEach((element, i) => {
+        zip.file(element.fileName, d3.csvFormat(element.data));
     });
-    document.getElementById('convert').disabled = true;
-    document.getElementById('convert').style.display = 'none';
-    document.querySelector('[id="download"]').disabled = false;
-    document.querySelector('[id="download"]').style.display = 'inline-block';
+    zip.generateAsync({
+        type: 'blob'
+    }).then(blob => {
+        saveAs(blob, 'canvasCSV.zip');
+        newData = [];
+        files = [];
+        convertButton.classList.add('disabled');
+        convertButton.style.display = 'inline-block';
+        downloadButton.disabled = true;
+        downloadButton.style.display = 'none';
+        document.getElementById('valid').innerHTML = '';
+        dropText.innerHTML = 'Drag and Drop CSV Files Here';
+        check = false;
+    }, err => {
+        console.error(err);
+        alert('There was an error downloading the zip file containing the CSVs');
+    });
+});
+
+function allowDownload() {
+    convertButton.style.display = 'none';
+    downloadButton.disabled = false;
+    downloadButton.style.display = 'inline-block';
+    dropText.innerHTML = 'Canvas CSV Download Ready';
 }
 
 function modifyCSV(files) {
+    let content = document.getElementById('content');
+    let loader = document.getElementById('loader');
     invalidFiles = [];
-    document.getElementById('content').style.display = 'none';
+    content.style.display = 'none';
     document.getElementById('invalid_zone').style.display = 'none';
     document.getElementById('invalid').innerHTML = '';
-    document.getElementById('loader').style.display = 'inline-block';
-    let newData = [];
+    loader.style.display = 'inline-block';
     files.forEach((file, i) => {
-
+        newData.push({
+            fileName: file.fileName,
+            data: []
+        });
+        file.data.forEach(student => {
+            let assignment = Object.keys(student)[4];
+            if (student[''] !== 'Total Points') {
+                newData[i].data.push({
+                    Student: `${student.Last}, ${student.Given}`,
+                    'Student ID': student['Student ID'],
+                    Section: '',
+                    [assignment]: student[assignment]
+                });
+            }
+        });
     });
     window.setTimeout(() => {
-        document.getElementById('loader').style.display = 'none';
-        document.getElementById('content').style.display = 'block';
-        allowDownload(newData);
-    }, Math.floor(Math.random() * 5 * 1000 + 1000));
-
+        loader.style.display = 'none';
+        content.style.display = 'block';
+        allowDownload();
+    }, Math.floor(Math.random() * 2 * 1000 + 1000));
 }
 
 function removeDragData(event) {
-
     if (event.dataTransfer.items) {
         // Use DataTransferItemList interface to remove the drag data
         event.dataTransfer.items.clear();
@@ -77,19 +97,70 @@ function checkDuplicates(fileName) {
     return false;
 }
 
-/* TODO: Validate the CSV file before modifying it.
-     This will help generate less errors. It will also make sure
-     users are uploading correctly formatted CSV files */
 function validateCSV(data) {
-    return data.match(/^id,first_name,last_name,email,gender,ip_address/);
+    return data.match(/,Last,Given,Student ID,.+?,Total/);
 }
 
+function makeValidatedTable(file) {
+    if (files.length % 5 === 1 || validRowCount === 0) {
+        validRowCount++;
+        let tableRow = document.createElement('tr');
+        tableRow.id = `row${validRowCount}`;
+        document.getElementById('valid').appendChild(tableRow);
+
+    }
+    let tableData = document.createElement('td');
+    let node = document.createTextNode(file.name);
+    tableData.appendChild(node);
+    document.getElementById(`row${validRowCount}`).appendChild(tableData);
+}
+
+function makeInvalidTable(file) {
+    if (invalidFiles.length % 5 === 1 || invalidRowCount === 0) {
+        invalidRowCount++;
+        let tableRow = document.createElement('tr');
+        tableRow.id = `invRow${invalidRowCount}`;
+        document.getElementById('invalid').appendChild(tableRow);
+    }
+    let tableData = document.createElement('td');
+    let node = document.createTextNode(file.name);
+    tableData.appendChild(node);
+    document.getElementById(`invRow${invalidRowCount}`).appendChild(tableData);
+    document.getElementById('invalid_zone').style.display = 'block';
+}
+
+document.getElementById('file').addEventListener('change', event => {
+    let files = Array.from(event.target.files);
+    files.forEach(file => {
+        let fileReader = new FileReader();
+        fileReader.onload = (event) => {
+            if (checkDuplicates(file.name)) {
+                return;
+            }
+            event.target.result = event.target.result.replace(/\ufeff/g, '');
+            if (validateCSV(event.target.result)) {
+                convertButton.classList.remove('disabled');
+                files.push({
+                    fileName: file.name,
+                    data: d3.csvParse(event.target.result)
+                });
+                makeValidatedTable(file);
+            } else {
+                invalidFiles.push(file.name);
+                makeInvalidTable(file);
+            }
+        };
+        fileReader.readAsText(file);
+    });
+});
 
 document.getElementById('drop_zone').addEventListener('drop', event => {
     event.preventDefault();
     if (!check) {
-        document.querySelector('[id="download"]').disabled = true;
-        document.querySelector('[id="download"]').style.display = 'none';
+        let downloadButton = document.querySelector('[id="download"]');
+        let convertButton = document.getElementById('convert');
+        downloadButton.disabled = true;
+        downloadButton.style.display = 'none';
         if (event.dataTransfer.items) {
             // Use DataTransferItemList interface to access the file(s)
             for (let i = 0; i < event.dataTransfer.items.length; i++) {
@@ -102,36 +173,17 @@ document.getElementById('drop_zone').addEventListener('drop', event => {
                             if (checkDuplicates(file.name)) {
                                 return;
                             }
+                            event.target.result = event.target.result.replace(/\ufeff/g, '');
                             if (validateCSV(event.target.result)) {
-                                document.getElementById('convert').classList.remove('disabled');
+                                convertButton.classList.remove('disabled');
                                 files.push({
                                     fileName: file.name,
                                     data: d3.csvParse(event.target.result)
                                 });
-                                if (files.length % 5 === 1 || validRowCount === 0) {
-                                    validRowCount++;
-                                    let tableRow = document.createElement('tr');
-                                    tableRow.id = `row${validRowCount}`;
-                                    document.getElementById('valid').appendChild(tableRow);
-
-                                }
-                                let tableData = document.createElement('td');
-                                let node = document.createTextNode(file.name);
-                                tableData.appendChild(node);
-                                document.getElementById(`row${validRowCount}`).appendChild(tableData);
+                                makeValidatedTable(file);
                             } else {
                                 invalidFiles.push(file.name);
-                                if (invalidFiles.length % 5 === 1 || invalidRowCount === 0) {
-                                    invalidRowCount++;
-                                    let tableRow = document.createElement('tr');
-                                    tableRow.id = `invRow${invalidRowCount}`;
-                                    document.getElementById('invalid').appendChild(tableRow);
-                                }
-                                let tableData = document.createElement('td');
-                                let node = document.createTextNode(file.name);
-                                tableData.appendChild(node);
-                                document.getElementById(`invRow${invalidRowCount}`).appendChild(tableData);
-                                document.getElementById('invalid_zone').style.display = 'block';
+                                makeInvalidTable(file);
                             }
                         };
                         reader.readAsText(file);

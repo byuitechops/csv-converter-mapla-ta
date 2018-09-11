@@ -1,10 +1,15 @@
+#choose_files {
+    margin-top: 100px;
+    text-align: center;
+}
+
 #drop_zone {
     margin: auto;
-    margin-top: 100px;
+    margin-top: 25px;
+    margin-bottom: 25px;
     border: 1.5px solid black;
     width: 50%;
     overflow: hidden;
-    margin-bottom: 5px;
 }
 
 #drop_zone>p {
@@ -64,4 +69,13 @@
     bottom: 0;
     margin: auto;
     display: none;
+}
+
+.inputfile {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
 }

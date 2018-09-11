@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Page Title</title>
+    <title>MapleTA -> Canvas</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
@@ -14,13 +14,17 @@
 
 <body>
     <nav>
-        <div class="nav-wrapper blue darken-1">
-            <a href="#" class="brand-logo"></a>
-        </div>
+        <div class="nav-wrapper blue darken-1"></div>
     </nav>
     <div id="content">
+        <div id="choose_files">
+            <p>Select CSV files by clicking the button below or dragging and droping them into the box below</p>
+            <input type="file" name="file" id="file" class="inputfile" accept=".csv" multiple />
+            <label for="file" class="waves-effect waves-light red darken-1 btn"><i class="material-icons left">get_app</i>Choose
+                files</label>
+        </div>
         <div id="drop_zone">
-            <p>Drag and Drop CSV Files Here</p>
+            <p id="dropText">Drag and Drop CSV Files Here</p>
 
             <table id="valid"></table>
         </div>
