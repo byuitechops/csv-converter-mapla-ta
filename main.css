@@ -116,4 +116,8 @@ footer {
     .container {
         text-align: center;
     }
+
+    .container>ul>li {
+        text-align: left;
+    }
 }
