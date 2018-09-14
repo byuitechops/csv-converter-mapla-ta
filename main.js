@@ -45,7 +45,6 @@ function init() {
  * wheel appear. The modified data is stored in the
  * newFiles array.
  * 
- * 
  * Return Type: void
  ***************************************************/
 function modifyCSV() {
@@ -320,4 +319,5 @@ document.addEventListener('DOMContentLoaded', () => {
     var instances = M.Modal.init(elems);
 });
 
+// This will initialize necessary variables and manipulate the DOM
 init();
