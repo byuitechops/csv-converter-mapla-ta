@@ -165,7 +165,7 @@ function fileOnLoad(event, fileName) {
     } else {
         invalidFiles.push(fileName);
         addToTable(fileName, 'invalid');
-        document.getElementById('invalidMSG').innerHTML = `*Please check that the CSV file contains the following column headers:${headersToCheck.join(', ')}`;
+        document.getElementById('invalidMSG').innerHTML = `*Please check that each CSV file contains the following column headers: ${headersToCheck.join(', ')}`;
         document.getElementById('invalid_zone').style.display = 'block';
     }
 }
