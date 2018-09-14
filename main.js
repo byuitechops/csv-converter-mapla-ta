@@ -8,7 +8,8 @@ let downloading,
     downloadButton = document.querySelector('[id="download"]'),
     convertButton = document.getElementById('convert'),
     chooseFiles = document.getElementById('choose_files'),
-    dropText = document.getElementById('dropText');
+    dropText = document.getElementById('dropText'),
+    instructions = document.getElementById('instructions');
 
 /***************************************************
  *                    init()
@@ -26,6 +27,7 @@ function init() {
     invalidFiles = [];
     // Reset the text after downloading
     document.getElementById('valid').innerHTML = '';
+    instructions.style.display = 'none';
     document.getElementsByClassName('browser-default')[0].style.display = 'block';
     dropText.innerHTML = 'Drag and Drop CSV Files Here';
     downloading = false;
@@ -115,7 +117,10 @@ function checkForDuplicates(fileName) {
  * 
  * Return Type: Array/null
  ***************************************************/
-function validateCSV(data) {
+function validateCSV(data, csvData) {
+    if (!csvData.match(/,\d+%/g)) {
+        return false;
+    }
     return headersToCheck.every(header => data.columns.includes(header));
 }
 
@@ -155,7 +160,7 @@ function fileOnLoad(event, fileName) {
     }
     event.target.result = event.target.result.replace(/\ufeff/g, '');
     let data = d3.csvParse(event.target.result);
-    if (validateCSV(data)) {
+    if (validateCSV(data, event.target.result)) {
         convertButton.classList.remove('disabled');
         files.push({
             fileName,
@@ -165,7 +170,7 @@ function fileOnLoad(event, fileName) {
     } else {
         invalidFiles.push(fileName);
         addToTable(fileName, 'invalid');
-        document.getElementById('invalidMSG').innerHTML = `*Please check that the CSV file contains the following column headers:${headersToCheck.join(', ')}`;
+        document.getElementById('invalidMSG').innerHTML = `*Please check that each CSV file contains the following column headers: ${headersToCheck.join(', ')}`;
         document.getElementById('invalid_zone').style.display = 'block';
     }
 }
@@ -190,6 +195,7 @@ function makeTheUserWaitForNoReason() {
         document.getElementById('invalid_zone').style.display = 'none';
         document.getElementById('invalid').innerHTML = '';
         document.getElementsByClassName('browser-default')[0].style.display = 'none';
+        instructions.style.display = 'block';
         loader.style.display = 'none';
         content.style.display = 'block';
         // Allow the download
