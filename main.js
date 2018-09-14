@@ -181,6 +181,7 @@ function makeTheUserWaitForNoReason() {
         chooseFiles.style.display = 'none';
         document.getElementById('invalid_zone').style.display = 'none';
         document.getElementById('invalid').innerHTML = '';
+        document.getElementsByClassName('browser-default')[0].style.display = 'none';
         loader.style.display = 'none';
         content.style.display = 'block';
         // Allow the download

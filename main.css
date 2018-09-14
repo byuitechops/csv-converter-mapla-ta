@@ -102,6 +102,18 @@ footer {
     margin-left: 164px;
 }
 
+#content>a>button.btn {
+    text-transform: capitalize;
+}
+
+svg {
+    margin-top: 5px;
+}
+
+svg path:nth-child(2) {
+    fill: white;
+}
+
 @media only screen and (max-width: 1600px) {
     .license-titles>div>h5 {
         margin-left: 0px;

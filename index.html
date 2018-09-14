@@ -6,8 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>MapleTA -> Canvas</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Icons for buttons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- Materialize Libraries -->
     <link rel="stylesheet" type="text/css" media="screen" href="./libraries/materialize/css/materialize.min.css" />
     <script src="./libraries/materialize/js/materialize.min.js"></script>
@@ -27,19 +25,31 @@
     </nav>
     <main>
         <div id="content">
+            <a href=""><button class="waves-effect waves-light blue btn"><i class="material-icons left"><svg xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M0 0h24v24H0z" fill="none" />
+                            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                        </svg></i>MapleTA
+                    Instructions</button></a>
             <div class="container flow-text">
-                <h1>MapleTA CSV to Canvas CSV</h1>
+                <h1 class="center">MapleTA CSV to Canvas CSV</h1>
                 <ul class="browser-default">
                     <li>Select CSV files by clicking the "Choose Files" button or dragging and droping them into the
                         box
                         below</li>
                     <li>Each CSV file must be named something unique. No two files may be named the same</li>
                 </ul>
-                <p><a href="">Instructions for MaplaTA</a></p>
+
             </div>
             <div id="choose_files">
                 <input type="file" name="file" id="file" class="inputfile" accept=".csv" multiple />
-                <label for="file" class="waves-effect waves-light red darken-1 btn"><i class="material-icons left">get_app</i>Choose
+                <label for="file" class="waves-effect waves-light red darken-1 btn"><i class="material-icons left"><svg
+                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M0 0h24v24H0z" fill="none" />
+                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+
+                        </svg>
+                    </i>Choose
                     files</label>
             </div>
             <div id="drop_zone">
@@ -47,9 +57,24 @@
                 <table id="valid"></table>
             </div>
             <div class="center-align" id="buttons">
-                <button class="waves-effect waves-light blue darken-1 btn disabled" id="convert"><i class="material-icons left">cached</i>Convert</button>
-                <button class="waves-effect waves-light green btn pulse" id="download"><i class="material-icons left">arrow_downward</i>Download</button>
-                <button class="waves-effect waves-light blue darken-1 btn" id="reset"><i class="material-icons left">replay</i>Reset</button>
+                <button class="waves-effect waves-light blue darken-1 btn disabled" id="convert"><i class="material-icons left"><svg
+                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M0 0h24v24H0z" fill="none" />
+                            <path d="M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z" />
+
+                        </svg></i>Convert</button>
+                <button class="waves-effect waves-light green btn pulse" id="download"><i class="material-icons left"><svg
+                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path fill="none" d="M0 0h24v24H0V0z" />
+                            <path fill="#010101" d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z" />
+                        </svg>
+                    </i>Download</button>
+                <button class="waves-effect waves-light blue darken-1 btn" id="reset"><i class="material-icons left"><svg
+                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M0 0h24v24H0z" fill="none" />
+                            <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" />
+                        </svg>
+                    </i>Reset</button>
             </div>
             <div id="invalid_zone">
                 <p>Invalid CSV Files</p>
@@ -61,9 +86,7 @@
     <footer class="page-footer transparent">
         <div class="footer-copyright transparent black-text">
             <div class="container">
-                <ul>
-                    <li><a class="modal-trigger" href="#modal1">Licenses</a></li>
-                </ul>
+                <p><a class="modal-trigger" href="#modal1">Licenses</a></p>
                 © 2018 Brigham Young University - Idaho
             </div>
         </div>
