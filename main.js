@@ -13,7 +13,10 @@ let downloading,
 /***************************************************
  *                    init()
  * 
- * 
+ * Initializes the necessary global variables and
+ * modifies some of the elements on the page. This
+ * function is called once the page has loaded and
+ * after the user clicks the download button.
  * 
  * Return Type: void
  ***************************************************/
@@ -23,6 +26,7 @@ function init() {
     invalidFiles = [];
     // Reset the text after downloading
     document.getElementById('valid').innerHTML = '';
+    document.getElementsByClassName('browser-default')[0].style.display = 'block';
     dropText.innerHTML = 'Drag and Drop CSV Files Here';
     downloading = false;
     // Fix buttons for after downloading
@@ -119,6 +123,8 @@ function validateCSV(data) {
 /***************************************************
  *                   addToTable()
  * 
+ * Adds a file to the valid or invalid table
+ * depending on whether validation was passed.
  * 
  * Return Type: void
  ***************************************************/
@@ -138,6 +144,9 @@ function addToTable(fileName, tableId) {
 /***************************************************
  *                  fileOnLoad()
  * 
+ * This function is ran on each file that is
+ * uploaded by the user. It calls the necessary
+ * function to determine is the file is accepted.
  * 
  * Return Type: void
  ***************************************************/
@@ -204,7 +213,7 @@ function makeTheUserWaitForNoReason() {
  * file into a single zipped folder. Once each file
  * has been placed the download starts.  
  ***************************************************/
-downloadButton.addEventListener('click', event => {
+downloadButton.addEventListener('click', () => {
     // If the user is converting only 1 file, don't zip it
     if (newFiles.length === 1) {
         let soloFile = newFiles[0];
@@ -294,7 +303,7 @@ window.addEventListener('drop', event => {
 });
 
 // Checks if the files array's length is greater than 0 before allowing the modifyCSV function to run 
-document.getElementById('convert').addEventListener('click', event => {
+document.getElementById('convert').addEventListener('click', () => {
     if (files.length > 0) {
         makeTheUserWaitForNoReason();
         modifyCSV();
@@ -302,11 +311,11 @@ document.getElementById('convert').addEventListener('click', event => {
 });
 
 // Resets the page by refreshing it. Note: This could break is the user loses connection
-document.getElementById('reset').addEventListener('click', event => {
+document.getElementById('reset').addEventListener('click', () => {
     window.location.reload();
 });
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
     var elems = document.querySelectorAll('.modal');
     var instances = M.Modal.init(elems);
 });
