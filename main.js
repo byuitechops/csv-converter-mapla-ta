@@ -1,6 +1,7 @@
 const headersToCheck = ['Last', 'Given', 'Student ID', 'Total'];
 const headersToKeep = ['Student', 'Student ID', 'Section'];
 const headersToDelete = ['', 'Last', 'Given', 'Total'];
+const tableIDs = ['valid', 'invalid'];
 let downloading,
     files,
     invalidFiles,
@@ -118,6 +119,7 @@ function checkForDuplicates(fileName) {
  * Return Type: Array/null
  ***************************************************/
 function validateCSV(data, csvData) {
+    // Check if the CSV is using percentages
     if (!csvData.match(/,\d+%/g)) {
         return false;
     }
@@ -125,24 +127,35 @@ function validateCSV(data, csvData) {
 }
 
 /***************************************************
- *                   addToTable()
+ *                  addToTables()
  * 
  * Adds a file to the valid or invalid table
  * depending on whether validation was passed.
  * 
  * Return Type: void
  ***************************************************/
-function addToTable(fileName, tableId) {
-    let table = document.getElementById(tableId);
-    let lastRow = table.querySelector('tr:last-child');
-    if (!lastRow || lastRow.children.length === 5) {
-        lastRow = document.createElement('tr');
-        table.appendChild(lastRow);
-    }
-    let tableData = document.createElement('td');
-    let node = document.createTextNode(fileName);
-    tableData.appendChild(node);
-    lastRow.appendChild(tableData);
+function addToTables() {
+    tableIDs.forEach(tableID => {
+        let table = document.getElementById(tableID);
+        let filesToAdd = [];
+        if (tableID === 'valid') {
+            filesToAdd = files;
+        } else {
+            filesToAdd = invalidFiles;
+        }
+        filesToAdd.forEach(file => {
+            let lastRow = table.querySelector('tr:last-child');
+            if (!lastRow || lastRow.children.length === 5) {
+                lastRow = document.createElement('tr');
+                table.appendChild(lastRow);
+            }
+            let tableData = document.createElement('td');
+            let node;
+            node = document.createTextNode(file.fileName);
+            tableData.appendChild(node);
+            lastRow.appendChild(tableData);
+        });
+    });
 }
 
 /***************************************************
@@ -155,24 +168,30 @@ function addToTable(fileName, tableId) {
  * Return Type: void
  ***************************************************/
 function fileOnLoad(event, fileName) {
-    if (checkForDuplicates(fileName)) {
-        return;
-    }
-    event.target.result = event.target.result.replace(/\ufeff/g, '');
-    let data = d3.csvParse(event.target.result);
-    if (validateCSV(data, event.target.result)) {
-        convertButton.classList.remove('disabled');
-        files.push({
-            fileName,
-            data
-        });
-        addToTable(fileName, 'valid');
-    } else {
-        invalidFiles.push(fileName);
-        addToTable(fileName, 'invalid');
-        document.getElementById('invalidMSG').innerHTML = `*Please check that each CSV file contains the following column headers: ${headersToCheck.join(', ')}`;
-        document.getElementById('invalid_zone').style.display = 'block';
-    }
+    return new Promise((resolve, reject) => {
+        if (checkForDuplicates(fileName)) {
+            reject('Duplicate Found');
+            return;
+        }
+        event.target.result = event.target.result.replace(/\ufeff/g, '');
+        let data = d3.csvParse(event.target.result);
+        if (validateCSV(data, event.target.result)) {
+            convertButton.classList.remove('disabled');
+            files.push({
+                fileName,
+                data
+            });
+            //addToTable(fileName, 'valid');
+        } else {
+            invalidFiles.push({
+                fileName
+            });
+            //addToTable(fileName, 'invalid');
+            document.getElementById('invalidMSG').innerHTML = `*Please check that each CSV file contains the following column headers: ${headersToCheck.join(', ')}`;
+            document.getElementById('invalid_zone').style.display = 'block';
+        }
+        resolve();
+    });
 }
 
 /***************************************************
@@ -205,6 +224,27 @@ function makeTheUserWaitForNoReason() {
         downloadButton.style.display = 'inline-block';
         dropText.innerHTML = 'Canvas CSV Download Ready';
     }, Math.floor(Math.random() * 2 * 1000 + 1000));
+}
+
+function readFile(file, callback) {
+    let fileReader = new FileReader();
+    fileReader.onload = (event) => {
+        fileOnLoad(event, file.name).then(callback, console.error);
+    };
+    fileReader.readAsText(file);
+}
+
+function sortFiles(file1, file2) {
+    console.log('File1:', file1, 'File2:', file2);
+    let filename1 = file1.fileName.toUpperCase();
+    let filename2 = file2.fileName.toUpperCase();
+    if (filename1 < filename2) {
+        return -1;
+    }
+    if (filename1 > filename2) {
+        return 1;
+    }
+    return 0;
 }
 
 /* -- Event Listeners -- */
@@ -257,10 +297,19 @@ downloadButton.addEventListener('click', () => {
  ***************************************************/
 document.getElementById('file').addEventListener('change', event => {
     let tempFiles = Array.from(event.target.files);
-    tempFiles.forEach(file => {
-        let fileReader = new FileReader();
-        fileReader.onload = (event) => fileOnLoad(event, file.name);
-        fileReader.readAsText(file);
+    async.each(tempFiles, readFile, err => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        // TODO: Sort files
+        console.log(files);
+        console.log(invalidFiles);
+        files = files.sort(sortFiles);
+        invalidFiles = invalidFiles.sort(sortFiles);
+        // TODO: Create Table
+        addToTables();
+        console.log('Hello there!');
     });
 });
 
@@ -279,22 +328,38 @@ document.getElementById('drop_zone').addEventListener('drop', event => {
     if (downloading) return;
     if (event.dataTransfer.items) {
         // Use DataTransferItemList interface to access the file(s)
-        for (let i = 0; i < event.dataTransfer.items.length; i++) {
-            // If dropped items aren't files, reject them
-            if (event.dataTransfer.items[i].kind === 'file') {
-                let file = event.dataTransfer.items[i].getAsFile();
-                if (file.name.match(/.csv$/)) {
-                    let fileReader = new FileReader();
-                    fileReader.onload = (event) => fileOnLoad(event, file.name);
-                    fileReader.readAsText(file);
-                } else {
-                    console.error('Unsupported file type!');
-                }
+        let items = Array.from(event.dataTransfer.items);
+        let tempFiles = items.filter(item => {
+            if (item.kind === 'file') {
+                let file = item.getAsFile();
+                return file.name.match(/.csv$/);
             }
-        }
-        // Pass event to removeDragData for cleanup
-        removeDragData(event);
+        });
+        tempFiles = tempFiles.map(item => item.getAsFile());
+        async.each(tempFiles, readFile, err => {
+            if (err) {
+                console.error(err);
+            } else {
+                console.log('General Kenobi!');
+            }
+        });
     }
+
+    // for (let i = 0; i < event.dataTransfer.items.length; i++) {
+    //     // If dropped items aren't files, reject them
+    //     if (event.dataTransfer.items[i].kind === 'file') {
+    //         let file = event.dataTransfer.items[i].getAsFile();
+    //         if (file.name.match(/.csv$/)) {
+    //             let fileReader = new FileReader();
+    //             fileReader.onload = (event) => fileOnLoad(event, file.name);
+    //             fileReader.readAsText(file);
+    //         } else {
+    //             console.error('Unsupported file type!');
+    //         }
+    //     }
+    // }
+    // Pass event to removeDragData for cleanup
+    removeDragData(event);
 });
 
 // Prevents a file from executing its default action (Download or open in browser)
