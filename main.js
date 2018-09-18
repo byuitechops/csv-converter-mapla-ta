@@ -17,7 +17,7 @@ let downloading,
  * 
  * Initializes the necessary global variables and
  * modifies some of the elements on the page. This
- * function is called once the page has loaded and
+ * function is called when the page loads and
  * after the user clicks the download button.
  * 
  * Return Type: void
@@ -44,9 +44,7 @@ function init() {
  *                    modifyCSV()
  * 
  * Modifies the data to conform to Canvas standards.
- * While converting, the function makes a loading
- * wheel appear. The modified data is stored in the
- * newFiles array.
+ * The modified data is stored in the newFiles array.
  * 
  * Return Type: void
  ***************************************************/
@@ -116,7 +114,9 @@ function checkForDuplicates(fileName) {
  * that are dynamic, I.E assignment names, need to
  * be accounted for.
  * 
- * Return Type: Array/null
+ * TODO: Check each grade for a percentage
+ * 
+ * Return Type: Array/null or bool
  ***************************************************/
 function validateCSV(data, csvData) {
     // Check if the CSV is using percentages
@@ -129,7 +129,7 @@ function validateCSV(data, csvData) {
 /***************************************************
  *                  addToTables()
  * 
- * Adds a file to the valid or invalid table
+ * Adds files to the valid or invalid table
  * depending on whether validation was passed.
  * 
  * Return Type: void
@@ -161,9 +161,9 @@ function addToTables() {
 /***************************************************
  *                  fileOnLoad()
  * 
- * This function is ran on each file that is
+ * This function runs on each file that is
  * uploaded by the user. It calls the necessary
- * function to determine is the file is accepted.
+ * functions to determine if the file is accepted.
  * 
  * Return Type: void
  ***************************************************/
@@ -197,10 +197,11 @@ function fileOnLoad(event, fileName) {
 /***************************************************
  *           makeTheUserWaitForNoReason()
  * 
- * The modifyCSV() function runs instantaniously,
- * however to give the impression of conversion a 
- * loader will appear on the screen for 1-2 seconds.
- * Then the download will be allowed.
+ * Since most CSV uploads convert almost instantly,
+ * this function gives the user a sense that the
+ * tool is converting the CSVs. Once the wait is
+ * over, the function then allows the user to
+ * download the files.
  *       
  * Return Type: void
  ***************************************************/
@@ -226,6 +227,15 @@ function makeTheUserWaitForNoReason() {
     }, Math.floor(Math.random() * 2 * 1000 + 1000));
 }
 
+/***************************************************
+ *                   readFile()
+ * 
+ * Reads the files provided by the user. Once the
+ * file is read and loaded this function calls the
+ * fileOnLoad() function and then the callback. 
+ *       
+ * Return Type: void
+ ***************************************************/
 function readFile(file, callback) {
     let fileReader = new FileReader();
     fileReader.onload = (event) => {
@@ -234,6 +244,13 @@ function readFile(file, callback) {
     fileReader.readAsText(file);
 }
 
+/***************************************************
+ *                  sortFiles()
+ * This function sorts the files and invalid files
+ * into alphabetical order based on filename.
+ *       
+ * Return Type: void
+ ***************************************************/
 function sortFiles(file1, file2) {
     let filename1 = file1.fileName.toUpperCase();
     let filename2 = file2.fileName.toUpperCase();
@@ -254,7 +271,8 @@ function sortFiles(file1, file2) {
  * This listener's purpose is to run once the
  * the download is ready and the user clicks the 
  * download button. The function puts each converted
- * file into a single zipped folder. Once each file
+ * file into a single zipped folder unless there is
+ * only one file to be converted. Once each file
  * has been placed the download starts.  
  ***************************************************/
 downloadButton.addEventListener('click', () => {
@@ -290,9 +308,10 @@ downloadButton.addEventListener('click', () => {
  * 
  * This listener's purpose is to run once the user
  * has selected files from their file explorer. The
- * function checks for duplicates and validates each
- * file. Once a file validates the file is pushed 
- * to the files array. 
+ * function uses an asynchronous each() to read in 
+ * the files. Once they have been read in, the
+ * function calls the sort(sortfiles) and 
+ * addToTables() functions.
  ***************************************************/
 document.getElementById('file').addEventListener('change', event => {
     let tempFiles = Array.from(event.target.files);
@@ -311,10 +330,11 @@ document.getElementById('file').addEventListener('change', event => {
  *         Drop Zone Drag and Drop Listener
  * 
  * This listener's purpose is to run once the user
- * drops files into the drop zone. The function 
- * checks for duplicates and validates each file. 
- * Once a file validates the file is pushed onto the
- * files array. 
+ * drops files into the drop zone. The
+ * function uses an asynchronous each() to read in 
+ * the files. Once they have been read in, the
+ * function calls the sort(sortfiles) and 
+ * addToTables() functions.
  ***************************************************/
 document.getElementById('drop_zone').addEventListener('drop', event => {
     event.preventDefault();
@@ -340,21 +360,6 @@ document.getElementById('drop_zone').addEventListener('drop', event => {
             }
         });
     }
-
-    // for (let i = 0; i < event.dataTransfer.items.length; i++) {
-    //     // If dropped items aren't files, reject them
-    //     if (event.dataTransfer.items[i].kind === 'file') {
-    //         let file = event.dataTransfer.items[i].getAsFile();
-    //         if (file.name.match(/.csv$/)) {
-    //             let fileReader = new FileReader();
-    //             fileReader.onload = (event) => fileOnLoad(event, file.name);
-    //             fileReader.readAsText(file);
-    //         } else {
-    //             console.error('Unsupported file type!');
-    //         }
-    //     }
-    // }
-    // Pass event to removeDragData for cleanup
     removeDragData(event);
 });
 
@@ -381,6 +386,7 @@ document.getElementById('reset').addEventListener('click', () => {
     window.location.reload();
 });
 
+// Initializes the Materialize Modal
 document.addEventListener('DOMContentLoaded', () => {
     var elems = document.querySelectorAll('.modal');
     var instances = M.Modal.init(elems);
