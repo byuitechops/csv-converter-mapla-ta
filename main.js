@@ -235,7 +235,6 @@ function readFile(file, callback) {
 }
 
 function sortFiles(file1, file2) {
-    console.log('File1:', file1, 'File2:', file2);
     let filename1 = file1.fileName.toUpperCase();
     let filename2 = file2.fileName.toUpperCase();
     if (filename1 < filename2) {
@@ -302,14 +301,9 @@ document.getElementById('file').addEventListener('change', event => {
             console.error(err);
             return;
         }
-        // TODO: Sort files
-        console.log(files);
-        console.log(invalidFiles);
         files = files.sort(sortFiles);
         invalidFiles = invalidFiles.sort(sortFiles);
-        // TODO: Create Table
         addToTables();
-        console.log('Hello there!');
     });
 });
 
@@ -340,7 +334,9 @@ document.getElementById('drop_zone').addEventListener('drop', event => {
             if (err) {
                 console.error(err);
             } else {
-                console.log('General Kenobi!');
+                files = files.sort(sortFiles);
+                invalidFiles = invalidFiles.sort();
+                addToTables();
             }
         });
     }
