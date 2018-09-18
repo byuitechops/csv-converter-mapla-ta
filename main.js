@@ -28,6 +28,7 @@ function init() {
     invalidFiles = [];
     // Reset the text after downloading
     document.getElementById('valid').innerHTML = '';
+    document.getElementById('file').value = '';
     instructions.style.display = 'none';
     document.getElementsByClassName('browser-default')[0].style.display = 'block';
     dropText.innerHTML = 'Drag and Drop CSV Files Here';
