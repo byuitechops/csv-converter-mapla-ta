@@ -8,35 +8,33 @@
     margin-bottom: 25px;
     border: 1.5px solid black;
     width: 50%;
-    overflow: hidden;
 }
 
 #drop_zone>p {
     text-align: center;
     font-size: 30px;
-    padding-bottom: 5px;
     color: #999;
 }
 
-#drop_zone>table>tr>td {
-    text-align: center;
+#valid_zone>table>tr>td {
     color: #388e3c;
 }
 
-#invalid_zone {
+#uploaded_files {
     margin: auto;
-    display: none;
     width: 50%;
-    border: 1.5px solid black;
     overflow: hidden;
-    margin-top: 20px;
 }
 
-#invalid_zone>p {
-    text-align: center;
+#uploaded_files>div>h3 {
+    text-align: left;
     font-size: 30px;
-    padding-bottom: 5px;
-    color: #999
+    color: black;
+    margin-bottom: 0px;
+}
+
+#invalid_zone {
+    display: none;
 }
 
 #invalid_zone>table>tr>td {
@@ -70,7 +68,7 @@
     display: none;
 }
 
-p#invalidMSG {
+#invalidMSG {
     font-size: 18px;
     color: red;
 }

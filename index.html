@@ -32,9 +32,9 @@
                     <li><a href="http://byu-idaho.screenstepslive.com/s/18626/m/70207/l/942490-maple-t-a?token=ImJH1CyfVG_hfG8GM2SO17UoEJN6bfkn#exporting-grades"
                             target="_blank">MapleTA
                             Export Instructions</a></li>
-                    <li>Select CSV files by clicking the "Choose Files" button or dragging and droping them into the
-                        box below</li>
-                    <li>Each CSV file must be named something unique. No two files may be named the same</li>
+                    <li>Choose MapleTA CSV files by clicking the "Choose Files" button or dragging and dropping from
+                        your computer into the box below.</li>
+                    <li>Each MapleTA CSV file must be named something unique.</li>
                 </ul>
 
             </div>
@@ -53,7 +53,7 @@
                 <p id="dropText">Drag and Drop CSV Files Here</p>
                 <p><a href="http://byu-idaho.screenstepslive.com/s/18626/m/70207/l/942490-maple-t-a?token=ImJH1CyfVG_hfG8GM2SO17UoEJN6bfkn#importing-grades"
                         target="_blank" id="instructions">Canvas Import Instructions</a></p>
-                <table id="valid"></table>
+                <!-- <table id="valid"></table> -->
             </div>
             <div class="center-align" id="buttons">
                 <button class="waves-effect waves-light blue darken-1 btn disabled" id="convert"><i class="material-icons left"><svg
@@ -75,10 +75,18 @@
                         </svg>
                     </i>Reset</button>
             </div>
-            <div id="invalid_zone">
-                <p>Invalid CSV Files</p>
-                <p id="invalidMSG"></p>
-                <table id="invalid"></table>
+            <div id="uploaded_files">
+                <div id="valid_zone">
+                    <h3>MapleTA CSV Files</h3>
+                    <hr>
+                    <table id="valid"></table>
+                </div>
+                <div id="invalid_zone">
+                    <h3>Invalid Files</h3>
+                    <hr>
+                    <p id="invalidMSG"></p>
+                    <table id="invalid"></table>
+                </div>
             </div>
         </div>
     </main>
