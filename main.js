@@ -10,7 +10,9 @@ let downloading,
     convertButton = document.getElementById('convert'),
     chooseFiles = document.getElementById('choose_files'),
     dropText = document.getElementById('dropText'),
-    instructions = document.getElementById('instructions');
+    instructions = document.getElementById('instructions'),
+    validZone = document.getElementById('valid_zone'),
+    invalidZone = document.getElementById('invalid_zone');
 
 /***************************************************
  *                    init()
@@ -26,11 +28,11 @@ function init() {
     newFiles = [];
     files = [];
     invalidFiles = [];
-    // Reset the text after downloading
-    document.getElementById('valid').innerHTML = '';
+    // Reset the input file's value to blank
     document.getElementById('file').value = '';
     instructions.style.display = 'none';
     document.getElementsByClassName('browser-default')[0].style.display = 'block';
+    validZone.style.display = 'block';
     dropText.innerHTML = 'Drag and Drop CSV Files Here';
     downloading = false;
     // Fix buttons for after downloading
@@ -138,6 +140,7 @@ function validateCSV(data, csvData) {
 function addToTables() {
     tableIDs.forEach(tableID => {
         let table = document.getElementById(tableID);
+        table.innerHTML = '';
         let filesToAdd = [];
         if (tableID === 'valid') {
             filesToAdd = files;
@@ -178,6 +181,7 @@ function fileOnLoad(event, fileName) {
         let data = d3.csvParse(event.target.result);
         if (validateCSV(data, event.target.result)) {
             convertButton.classList.remove('disabled');
+            convertButton.classList.add('pulse');
             files.push({
                 fileName,
                 data
@@ -189,7 +193,7 @@ function fileOnLoad(event, fileName) {
             });
             //addToTable(fileName, 'invalid');
             document.getElementById('invalidMSG').innerHTML = `*Please check that each CSV file contains the following column headers: ${headersToCheck.join(', ')}`;
-            document.getElementById('invalid_zone').style.display = 'block';
+            invalidZone.style.display = 'block';
         }
         resolve();
     });
@@ -213,7 +217,10 @@ function makeTheUserWaitForNoReason() {
     loader.style.display = 'inline-block';
     window.setTimeout(() => {
         chooseFiles.style.display = 'none';
-        document.getElementById('invalid_zone').style.display = 'none';
+        invalidZone.style.display = 'none';
+        validZone.style.display = 'none';
+        // Reset the table text
+        document.getElementById('valid').innerHTML = '';
         document.getElementById('invalid').innerHTML = '';
         document.getElementsByClassName('browser-default')[0].style.display = 'none';
         instructions.style.display = 'block';
@@ -240,7 +247,10 @@ function makeTheUserWaitForNoReason() {
 function readFile(file, callback) {
     let fileReader = new FileReader();
     fileReader.onload = (event) => {
-        fileOnLoad(event, file.name).then(callback, console.error);
+        fileOnLoad(event, file.name).then(callback, (err) => {
+            console.error(err);
+            callback();
+        });
     };
     fileReader.readAsText(file);
 }
