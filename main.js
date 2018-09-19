@@ -1,6 +1,7 @@
 const headersToCheck = ['Last', 'Given', 'Student ID', 'Total'];
 const headersToKeep = ['Student', 'Student ID', 'Section'];
 const headersToDelete = ['', 'Last', 'Given', 'Total'];
+const tableIDs = ['valid', 'invalid'];
 let downloading,
     files,
     invalidFiles,
@@ -8,14 +9,15 @@ let downloading,
     downloadButton = document.querySelector('[id="download"]'),
     convertButton = document.getElementById('convert'),
     chooseFiles = document.getElementById('choose_files'),
-    dropText = document.getElementById('dropText');
+    dropText = document.getElementById('dropText'),
+    instructions = document.getElementById('instructions');
 
 /***************************************************
  *                    init()
  * 
  * Initializes the necessary global variables and
  * modifies some of the elements on the page. This
- * function is called once the page has loaded and
+ * function is called when the page loads and
  * after the user clicks the download button.
  * 
  * Return Type: void
@@ -26,6 +28,8 @@ function init() {
     invalidFiles = [];
     // Reset the text after downloading
     document.getElementById('valid').innerHTML = '';
+    document.getElementById('file').value = '';
+    instructions.style.display = 'none';
     document.getElementsByClassName('browser-default')[0].style.display = 'block';
     dropText.innerHTML = 'Drag and Drop CSV Files Here';
     downloading = false;
@@ -41,9 +45,7 @@ function init() {
  *                    modifyCSV()
  * 
  * Modifies the data to conform to Canvas standards.
- * While converting, the function makes a loading
- * wheel appear. The modified data is stored in the
- * newFiles array.
+ * The modified data is stored in the newFiles array.
  * 
  * Return Type: void
  ***************************************************/
@@ -113,70 +115,94 @@ function checkForDuplicates(fileName) {
  * that are dynamic, I.E assignment names, need to
  * be accounted for.
  * 
- * Return Type: Array/null
+ * TODO: Check each grade for a percentage
+ * 
+ * Return Type: Array/null or bool
  ***************************************************/
-function validateCSV(data) {
+function validateCSV(data, csvData) {
+    // Check if the CSV is using percentages
+    if (!csvData.match(/,\d+%/g)) {
+        return false;
+    }
     return headersToCheck.every(header => data.columns.includes(header));
 }
 
 /***************************************************
- *                   addToTable()
+ *                  addToTables()
  * 
- * Adds a file to the valid or invalid table
+ * Adds files to the valid or invalid table
  * depending on whether validation was passed.
  * 
  * Return Type: void
  ***************************************************/
-function addToTable(fileName, tableId) {
-    let table = document.getElementById(tableId);
-    let lastRow = table.querySelector('tr:last-child');
-    if (!lastRow || lastRow.children.length === 5) {
-        lastRow = document.createElement('tr');
-        table.appendChild(lastRow);
-    }
-    let tableData = document.createElement('td');
-    let node = document.createTextNode(fileName);
-    tableData.appendChild(node);
-    lastRow.appendChild(tableData);
+function addToTables() {
+    tableIDs.forEach(tableID => {
+        let table = document.getElementById(tableID);
+        let filesToAdd = [];
+        if (tableID === 'valid') {
+            filesToAdd = files;
+        } else {
+            filesToAdd = invalidFiles;
+        }
+        filesToAdd.forEach(file => {
+            let lastRow = table.querySelector('tr:last-child');
+            if (!lastRow || lastRow.children.length === 5) {
+                lastRow = document.createElement('tr');
+                table.appendChild(lastRow);
+            }
+            let tableData = document.createElement('td');
+            let node;
+            node = document.createTextNode(file.fileName);
+            tableData.appendChild(node);
+            lastRow.appendChild(tableData);
+        });
+    });
 }
 
 /***************************************************
  *                  fileOnLoad()
  * 
- * This function is ran on each file that is
+ * This function runs on each file that is
  * uploaded by the user. It calls the necessary
- * function to determine is the file is accepted.
+ * functions to determine if the file is accepted.
  * 
  * Return Type: void
  ***************************************************/
 function fileOnLoad(event, fileName) {
-    if (checkForDuplicates(fileName)) {
-        return;
-    }
-    event.target.result = event.target.result.replace(/\ufeff/g, '');
-    let data = d3.csvParse(event.target.result);
-    if (validateCSV(data)) {
-        convertButton.classList.remove('disabled');
-        files.push({
-            fileName,
-            data
-        });
-        addToTable(fileName, 'valid');
-    } else {
-        invalidFiles.push(fileName);
-        addToTable(fileName, 'invalid');
-        document.getElementById('invalidMSG').innerHTML = `*Please check that the CSV file contains the following column headers:${headersToCheck.join(', ')}`;
-        document.getElementById('invalid_zone').style.display = 'block';
-    }
+    return new Promise((resolve, reject) => {
+        if (checkForDuplicates(fileName)) {
+            reject('Duplicate Found');
+            return;
+        }
+        event.target.result = event.target.result.replace(/\ufeff/g, '');
+        let data = d3.csvParse(event.target.result);
+        if (validateCSV(data, event.target.result)) {
+            convertButton.classList.remove('disabled');
+            files.push({
+                fileName,
+                data
+            });
+            //addToTable(fileName, 'valid');
+        } else {
+            invalidFiles.push({
+                fileName
+            });
+            //addToTable(fileName, 'invalid');
+            document.getElementById('invalidMSG').innerHTML = `*Please check that each CSV file contains the following column headers: ${headersToCheck.join(', ')}`;
+            document.getElementById('invalid_zone').style.display = 'block';
+        }
+        resolve();
+    });
 }
 
 /***************************************************
  *           makeTheUserWaitForNoReason()
  * 
- * The modifyCSV() function runs instantaniously,
- * however to give the impression of conversion a 
- * loader will appear on the screen for 1-2 seconds.
- * Then the download will be allowed.
+ * Since most CSV uploads convert almost instantly,
+ * this function gives the user a sense that the
+ * tool is converting the CSVs. Once the wait is
+ * over, the function then allows the user to
+ * download the files.
  *       
  * Return Type: void
  ***************************************************/
@@ -190,6 +216,7 @@ function makeTheUserWaitForNoReason() {
         document.getElementById('invalid_zone').style.display = 'none';
         document.getElementById('invalid').innerHTML = '';
         document.getElementsByClassName('browser-default')[0].style.display = 'none';
+        instructions.style.display = 'block';
         loader.style.display = 'none';
         content.style.display = 'block';
         // Allow the download
@@ -201,6 +228,42 @@ function makeTheUserWaitForNoReason() {
     }, Math.floor(Math.random() * 2 * 1000 + 1000));
 }
 
+/***************************************************
+ *                   readFile()
+ * 
+ * Reads the files provided by the user. Once the
+ * file is read and loaded this function calls the
+ * fileOnLoad() function and then the callback. 
+ *       
+ * Return Type: void
+ ***************************************************/
+function readFile(file, callback) {
+    let fileReader = new FileReader();
+    fileReader.onload = (event) => {
+        fileOnLoad(event, file.name).then(callback, console.error);
+    };
+    fileReader.readAsText(file);
+}
+
+/***************************************************
+ *                  sortFiles()
+ * This function sorts the files and invalid files
+ * into alphabetical order based on filename.
+ *       
+ * Return Type: void
+ ***************************************************/
+function sortFiles(file1, file2) {
+    let filename1 = file1.fileName.toUpperCase();
+    let filename2 = file2.fileName.toUpperCase();
+    if (filename1 < filename2) {
+        return -1;
+    }
+    if (filename1 > filename2) {
+        return 1;
+    }
+    return 0;
+}
+
 /* -- Event Listeners -- */
 
 /***************************************************
@@ -209,7 +272,8 @@ function makeTheUserWaitForNoReason() {
  * This listener's purpose is to run once the
  * the download is ready and the user clicks the 
  * download button. The function puts each converted
- * file into a single zipped folder. Once each file
+ * file into a single zipped folder unless there is
+ * only one file to be converted. Once each file
  * has been placed the download starts.  
  ***************************************************/
 downloadButton.addEventListener('click', () => {
@@ -245,16 +309,21 @@ downloadButton.addEventListener('click', () => {
  * 
  * This listener's purpose is to run once the user
  * has selected files from their file explorer. The
- * function checks for duplicates and validates each
- * file. Once a file validates the file is pushed 
- * to the files array. 
+ * function uses an asynchronous each() to read in 
+ * the files. Once they have been read in, the
+ * function calls the sort(sortfiles) and 
+ * addToTables() functions.
  ***************************************************/
 document.getElementById('file').addEventListener('change', event => {
     let tempFiles = Array.from(event.target.files);
-    tempFiles.forEach(file => {
-        let fileReader = new FileReader();
-        fileReader.onload = (event) => fileOnLoad(event, file.name);
-        fileReader.readAsText(file);
+    async.each(tempFiles, readFile, err => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        files = files.sort(sortFiles);
+        invalidFiles = invalidFiles.sort(sortFiles);
+        addToTables();
     });
 });
 
@@ -262,10 +331,11 @@ document.getElementById('file').addEventListener('change', event => {
  *         Drop Zone Drag and Drop Listener
  * 
  * This listener's purpose is to run once the user
- * drops files into the drop zone. The function 
- * checks for duplicates and validates each file. 
- * Once a file validates the file is pushed onto the
- * files array. 
+ * drops files into the drop zone. The
+ * function uses an asynchronous each() to read in 
+ * the files. Once they have been read in, the
+ * function calls the sort(sortfiles) and 
+ * addToTables() functions.
  ***************************************************/
 document.getElementById('drop_zone').addEventListener('drop', event => {
     event.preventDefault();
@@ -273,22 +343,25 @@ document.getElementById('drop_zone').addEventListener('drop', event => {
     if (downloading) return;
     if (event.dataTransfer.items) {
         // Use DataTransferItemList interface to access the file(s)
-        for (let i = 0; i < event.dataTransfer.items.length; i++) {
-            // If dropped items aren't files, reject them
-            if (event.dataTransfer.items[i].kind === 'file') {
-                let file = event.dataTransfer.items[i].getAsFile();
-                if (file.name.match(/.csv$/)) {
-                    let fileReader = new FileReader();
-                    fileReader.onload = (event) => fileOnLoad(event, file.name);
-                    fileReader.readAsText(file);
-                } else {
-                    console.error('Unsupported file type!');
-                }
+        let items = Array.from(event.dataTransfer.items);
+        let tempFiles = items.filter(item => {
+            if (item.kind === 'file') {
+                let file = item.getAsFile();
+                return file.name.match(/.csv$/);
             }
-        }
-        // Pass event to removeDragData for cleanup
-        removeDragData(event);
+        });
+        tempFiles = tempFiles.map(item => item.getAsFile());
+        async.each(tempFiles, readFile, err => {
+            if (err) {
+                console.error(err);
+            } else {
+                files = files.sort(sortFiles);
+                invalidFiles = invalidFiles.sort();
+                addToTables();
+            }
+        });
     }
+    removeDragData(event);
 });
 
 // Prevents a file from executing its default action (Download or open in browser)
@@ -314,6 +387,7 @@ document.getElementById('reset').addEventListener('click', () => {
     window.location.reload();
 });
 
+// Initializes the Materialize Modal
 document.addEventListener('DOMContentLoaded', () => {
     var elems = document.querySelectorAll('.modal');
     var instances = M.Modal.init(elems);

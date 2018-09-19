@@ -15,6 +15,7 @@
     <script src="./libraries/d3-dsv/d3-dsv.min.js"></script>
     <script src="./libraries/filesaver/FileSaver.min.js"></script>
     <script src="./libraries/jszip/jszip.min.js"></script>
+    <script src="./libraries/async/async.js"></script>
     <!-- Ours -->
     <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
 </head>
@@ -25,18 +26,14 @@
     </nav>
     <main>
         <div id="content">
-            <a href="" target="_blank"><button class="waves-effect waves-light blue btn"><i class="material-icons left"><svg
-                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                            <path d="M0 0h24v24H0z" fill="none" />
-                            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
-                        </svg></i>MapleTA
-                    Instructions</button></a>
             <div class="container flow-text">
                 <h1 class="center">MapleTA CSV to Canvas CSV</h1>
                 <ul class="browser-default">
+                    <li><a href="http://byu-idaho.screenstepslive.com/s/18626/m/70207/l/942490-maple-t-a?token=ImJH1CyfVG_hfG8GM2SO17UoEJN6bfkn#exporting-grades"
+                            target="_blank">MapleTA
+                            Export Instructions</a></li>
                     <li>Select CSV files by clicking the "Choose Files" button or dragging and droping them into the
-                        box
-                        below</li>
+                        box below</li>
                     <li>Each CSV file must be named something unique. No two files may be named the same</li>
                 </ul>
 
@@ -54,6 +51,8 @@
             </div>
             <div id="drop_zone">
                 <p id="dropText">Drag and Drop CSV Files Here</p>
+                <p><a href="http://byu-idaho.screenstepslive.com/s/18626/m/70207/l/942490-maple-t-a?token=ImJH1CyfVG_hfG8GM2SO17UoEJN6bfkn#importing-grades"
+                        target="_blank" id="instructions">Canvas Import Instructions</a></p>
                 <table id="valid"></table>
             </div>
             <div class="center-align" id="buttons">
@@ -501,6 +500,31 @@
                     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
                     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
                     OTHER DEALINGS IN THE SOFTWARE.
+                    </pre>
+                    <hr>
+                </div>
+                <div>
+                    <h5>Async</h5>
+                    <pre>
+                    Copyright (c) 2010-2018 Caolan McMahon
+
+                    Permission is hereby granted, free of charge, to any person obtaining a copy
+                    of this software and associated documentation files (the "Software"), to deal
+                    in the Software without restriction, including without limitation the rights
+                    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+                    copies of the Software, and to permit persons to whom the Software is
+                    furnished to do so, subject to the following conditions:
+                        
+                    The above copyright notice and this permission notice shall be included in
+                    all copies or substantial portions of the Software.
+                        
+                    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+                    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+                    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+                    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+                    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+                    THE SOFTWARE.
                     </pre>
                 </div>
             </div>
