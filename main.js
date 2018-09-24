@@ -39,6 +39,7 @@ function init() {
     // Fix buttons for after downloading
     convertButton.style.display = 'inline-block';
     convertButton.classList.add('disabled');
+    convertButton.classList.remove('pulse');
     downloadButton.disabled = true;
     downloadButton.style.display = 'none';
     chooseFiles.style.display = 'block';
@@ -123,7 +124,7 @@ function checkForDuplicates(fileName) {
  * Return Type: Array/null or bool
  ***************************************************/
 function validateCSV(data, csvData) {
-    // Check if the CSV is using percentages
+    // Check if the CSV is using percentages. This needs to be changed to check each individual grade.
     if (!csvData.match(/,\d+%/g)) {
         return false;
     }
@@ -193,7 +194,7 @@ function fileOnLoad(event, fileName) {
                 fileName
             });
             //addToTable(fileName, 'invalid');
-            document.getElementById('invalidMSG').innerHTML = `*Please check that each CSV file contains the following column headers: ${headersToCheck.join(', ')}`;
+            document.getElementById('invalidMSG').innerHTML = `*Please check that each CSV file contains the following column headers: ${headersToCheck.join(', ')}. Also check that each grade is a percentage.`;
             invalidZone.style.display = 'block';
         }
         resolve();
