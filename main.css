@@ -130,4 +130,8 @@ svg path:nth-child(2) {
     .container>ul>li {
         text-align: left;
     }
+
+    #uploaded_files>div>h3 {
+        text-align: center;
+    }
 }

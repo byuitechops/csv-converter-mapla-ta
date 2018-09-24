@@ -10,6 +10,7 @@ let downloading,
     convertButton = document.getElementById('convert'),
     chooseFiles = document.getElementById('choose_files'),
     dropText = document.getElementById('dropText'),
+    dropZone = document.getElementById('drop_zone'),
     instructions = document.getElementById('instructions'),
     validZone = document.getElementById('valid_zone'),
     invalidZone = document.getElementById('invalid_zone');
@@ -30,9 +31,9 @@ function init() {
     invalidFiles = [];
     // Reset the input file's value to blank
     document.getElementById('file').value = '';
-    instructions.style.display = 'none';
     document.getElementsByClassName('browser-default')[0].style.display = 'block';
     validZone.style.display = 'block';
+    dropZone.style.border = '1.5px solid black';
     dropText.innerHTML = 'Drag and Drop CSV Files Here';
     downloading = false;
     // Fix buttons for after downloading
@@ -223,6 +224,7 @@ function makeTheUserWaitForNoReason() {
         document.getElementById('valid').innerHTML = '';
         document.getElementById('invalid').innerHTML = '';
         document.getElementsByClassName('browser-default')[0].style.display = 'none';
+        dropZone.style.border = 'none';
         instructions.style.display = 'block';
         loader.style.display = 'none';
         content.style.display = 'block';
