@@ -184,13 +184,23 @@ function addToTables() {
  ***************************************************/
 function fileOnLoad(event, fileName) {
     return new Promise((resolve, reject) => {
-        if (checkForDuplicates(fileName)) {
-            reject('Duplicate Found');
-            return;
-        }
         event.target.result = event.target.result.replace(/\ufeff/g, '');
         let data = d3.csvParse(event.target.result);
         if (validateCSV(data, event.target.result)) {
+            if (checkForDuplicates(fileName)) {
+                // Remove the validated file from the invalidFiles list.
+                if (invalidFiles.some(file => fileName === file.fileName)) {
+                    let removeIndex = invalidFiles.findIndex(file => file.fileName === fileName);
+                    invalidFiles.splice(removeIndex, 1);
+                    // Check if the invalid files array's length is 0
+                    if (invalidFiles.length === 0) {
+                        invalidZone.style.display = 'none';
+                    }
+                } else {
+                    reject('Duplicate Found');
+                    return;
+                }
+            }
             convertButton.classList.remove('disabled');
             convertButton.classList.add('pulse');
             files.push({
@@ -199,11 +209,16 @@ function fileOnLoad(event, fileName) {
             });
             //addToTable(fileName, 'valid');
         } else {
+            if (checkForDuplicates(fileName)) {
+                reject('Duplicate Found');
+                return;
+            }
             invalidFiles.push({
                 fileName
             });
             //addToTable(fileName, 'invalid');
-            document.getElementById('invalidMSG').innerHTML = `*Please check that each CSV file contains the following column headers: ${headersToCheck.join(', ')}. Also check that each grade is a percentage.`;
+            document.getElementById('invalidMSG').innerHTML = `*Please check that each CSV file contains the following column headers: ${headersToCheck.join(', ')}. 
+            Also check that each grade is a percentage.`;
             invalidZone.style.display = 'block';
         }
         resolve();
