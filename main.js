@@ -99,7 +99,7 @@ function removeDragData(event) {
  * Return Type: bool
  ***************************************************/
 function checkForDuplicates(fileName) {
-    if (invalidFiles.some(file => fileName === file)) {
+    if (invalidFiles.some(file => fileName === file.fileName)) {
         // The user is trying to upload a file that has already been uploaded. Stop them.
         return true;
     }
@@ -119,16 +119,25 @@ function checkForDuplicates(fileName) {
  * that are dynamic, I.E assignment names, need to
  * be accounted for.
  * 
- * TODO: Check each grade for a percentage
- * 
  * Return Type: Array/null or bool
  ***************************************************/
-function validateCSV(data, csvData) {
-    // Check if the CSV is using percentages. This needs to be changed to check each individual grade.
-    if (!csvData.match(/,\d+%/g)) {
-        return false;
+function validateCSV(data) {
+    // Check the CSV for the correct column headers
+    if (headersToCheck.every(header => data.columns.includes(header))) {
+        // Check each row for percentages on the grades
+        return data.every(row => {
+            // Skip the total points row. This doesn't need percentage validation
+            if (!row['']) {
+                let rowKeys = Object.keys(row);
+                let startIndex = rowKeys.findIndex(key => key === 'Student ID') + 1;
+                let keysToCheck = rowKeys.slice(startIndex, rowKeys.length - 1);
+                return keysToCheck.every(key => row[key].match(/\d+%/) || row[key] === '');
+            }
+            return true;
+        });
     }
-    return headersToCheck.every(header => data.columns.includes(header));
+    // CSV files doesn't have the correct column headers
+    return false;
 }
 
 /***************************************************
@@ -175,13 +184,23 @@ function addToTables() {
  ***************************************************/
 function fileOnLoad(event, fileName) {
     return new Promise((resolve, reject) => {
-        if (checkForDuplicates(fileName)) {
-            reject('Duplicate Found');
-            return;
-        }
         event.target.result = event.target.result.replace(/\ufeff/g, '');
         let data = d3.csvParse(event.target.result);
         if (validateCSV(data, event.target.result)) {
+            if (checkForDuplicates(fileName)) {
+                // Remove the validated file from the invalidFiles list.
+                if (invalidFiles.some(file => fileName === file.fileName)) {
+                    let removeIndex = invalidFiles.findIndex(file => file.fileName === fileName);
+                    invalidFiles.splice(removeIndex, 1);
+                    // Check if the invalid files array's length is 0
+                    if (invalidFiles.length === 0) {
+                        invalidZone.style.display = 'none';
+                    }
+                } else {
+                    reject('Duplicate Found');
+                    return;
+                }
+            }
             convertButton.classList.remove('disabled');
             convertButton.classList.add('pulse');
             files.push({
@@ -190,11 +209,16 @@ function fileOnLoad(event, fileName) {
             });
             //addToTable(fileName, 'valid');
         } else {
+            if (checkForDuplicates(fileName)) {
+                reject('Duplicate Found');
+                return;
+            }
             invalidFiles.push({
                 fileName
             });
             //addToTable(fileName, 'invalid');
-            document.getElementById('invalidMSG').innerHTML = `*Please check that each CSV file contains the following column headers: ${headersToCheck.join(', ')}. Also check that each grade is a percentage.`;
+            document.getElementById('invalidMSG').innerHTML = `*Please check that each CSV file contains the following column headers: ${headersToCheck.join(', ')}. 
+            Also check that each grade is a percentage.`;
             invalidZone.style.display = 'block';
         }
         resolve();
