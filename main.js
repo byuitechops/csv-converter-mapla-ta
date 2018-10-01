@@ -99,7 +99,7 @@ function removeDragData(event) {
  * Return Type: bool
  ***************************************************/
 function checkForDuplicates(fileName) {
-    if (invalidFiles.some(file => fileName === file)) {
+    if (invalidFiles.some(file => fileName === file.fileName)) {
         // The user is trying to upload a file that has already been uploaded. Stop them.
         return true;
     }
@@ -119,16 +119,25 @@ function checkForDuplicates(fileName) {
  * that are dynamic, I.E assignment names, need to
  * be accounted for.
  * 
- * TODO: Check each grade for a percentage
- * 
  * Return Type: Array/null or bool
  ***************************************************/
-function validateCSV(data, csvData) {
-    // Check if the CSV is using percentages. This needs to be changed to check each individual grade.
-    if (!csvData.match(/,\d+%/g)) {
-        return false;
+function validateCSV(data) {
+    // Check the CSV for the correct column headers
+    if (headersToCheck.every(header => data.columns.includes(header))) {
+        // Check each row for percentages on the grades
+        return data.every(row => {
+            // Skip the total points row. This doesn't need percentage validation
+            if (!row['']) {
+                let rowKeys = Object.keys(row);
+                let startIndex = rowKeys.findIndex(key => key === 'Student ID') + 1;
+                let keysToCheck = rowKeys.slice(startIndex, rowKeys.length - 1);
+                return keysToCheck.every(key => row[key].match(/\d+%/) || row[key] === '');
+            }
+            return true;
+        });
     }
-    return headersToCheck.every(header => data.columns.includes(header));
+    // CSV files doesn't have the correct column headers
+    return false;
 }
 
 /***************************************************
