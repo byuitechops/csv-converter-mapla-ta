@@ -18,6 +18,15 @@
 
 #valid_zone>table>tr>td {
     color: #388e3c;
+    text-align: center;
+}
+
+#valid {
+    background-color: #388e3c33;
+}
+
+#invalid {
+    background-color: #f4433633;
 }
 
 #uploaded_files {
@@ -47,6 +56,10 @@
 }
 
 #convert:hover {
+    opacity: .8;
+}
+
+#choose-files:hover {
     opacity: .8;
 }
 
@@ -98,6 +111,35 @@ footer {
 
 .license-titles>div>h5 {
     margin-left: 164px;
+}
+
+.feedback-button {
+    height: 40px;
+    border: solid 1px #CCCCCC;
+    border-radius: 6px;
+    background: #1e88e5;
+    width: 150px;
+    line-height: 28px;
+    font-weight: 450;
+    color: white;
+    transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    text-align: left;
+    font-size: 17px;
+    position: fixed;
+    right: -63px;
+    top: 80%;
+    z-index: 999;
+    transition: right .25s;
+    -webkit-transition: right .25s;
+}
+
+.feedback-button:hover {
+    cursor: pointer;
+    right: -59px;
+    opacity: .9;
 }
 
 #content>a>button.btn {
