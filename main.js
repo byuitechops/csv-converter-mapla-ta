@@ -1,7 +1,10 @@
+// Global arrays that help with validating CSV files
 const headersToCheck = ['Last', 'Given', 'Student ID', 'Total'];
 const headersToKeep = ['Student', 'Student ID', 'Section'];
 const headersToDelete = ['', 'Last', 'Given', 'Total'];
 const tableIDs = ['valid', 'invalid'];
+
+// Starting variables. Most deal with getting elements from the DOM
 let downloading,
     files,
     invalidFiles,
